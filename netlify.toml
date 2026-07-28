@@ -1,5 +1,5 @@
 [build]
-base = "app"
+base = "prod_pin"
 command = """
   git clone https://github.com/flutter/flutter.git --branch 3.41.6 --depth 1
   export PATH="$PWD/flutter/bin:$PATH"
