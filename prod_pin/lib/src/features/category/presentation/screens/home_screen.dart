@@ -1,0 +1,107 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:prod_pin/src/common/index.dart';
+import 'package:prod_pin/src/core/index.dart';
+import 'package:prod_pin/src/features/index.dart';
+import 'package:provider/provider.dart';
+
+class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  final CategoryViewModel categoryViewModel = getIt<CategoryViewModel>();
+
+  @override
+  void initState() {
+    super.initState();
+    categoryViewModel.getCategories();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider.value(
+      value: categoryViewModel,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text('ProdPin', style: context.appTextStyles.headlineMedium),
+          actions: [
+            IconButton(
+              icon: const Icon(Icons.add),
+              onPressed: () => context.push(AppRoutes.addCategory),
+            ),
+          ],
+        ),
+        body: Selector<CategoryViewModel, bool>(
+          selector: (_, vm) => vm.isLoading,
+          builder: (_, isLoading, __) {
+            if (isLoading) return const CircularProgressIndicator();
+            return Selector<CategoryViewModel, List<Category>>(
+              selector: (_, vm) => vm.categories,
+              builder: (_, categories, __) {
+                return categories.isEmpty
+                    ? EmptyStateWidget(
+                        message: 'No categories yet. Add your first one!',
+                        icon: Icons.category_outlined,
+                        actionLabel: 'Add Category',
+                        onAction: () => context.push(AppRoutes.addCategory),
+                      )
+                    : LayoutBuilder(
+                        builder: (context, constraints) {
+                          final columns = context.categoryGridColumns;
+                          if (columns == 1) {
+                            return ListView.separated(
+                              padding: const EdgeInsets.all(16),
+                              itemCount: categories.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(height: 14),
+                              itemBuilder: (context, index) {
+                                final category = categories[index];
+                                return CategoryCard(
+                                  category: category,
+                                  isFull: categoryViewModel
+                                      .isCategoryFull(category),
+                                  onTap: () => context.push(
+                                    AppRoutes.categoryDetail,
+                                    extra: category,
+                                  ),
+                                );
+                              },
+                            );
+                          }
+                          return GridView.builder(
+                            padding: const EdgeInsets.all(16),
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: columns,
+                              mainAxisSpacing: 16,
+                              crossAxisSpacing: 16,
+                              childAspectRatio: 1.1,
+                            ),
+                            itemCount: categories.length,
+                            itemBuilder: (context, index) {
+                              final category = categories[index];
+                              return CategoryCard(
+                                category: category,
+                                isFull:
+                                    categoryViewModel.isCategoryFull(category),
+                                onTap: () => context.push(
+                                  AppRoutes.categoryDetail,
+                                  extra: category,
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+}

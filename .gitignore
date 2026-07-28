@@ -1,0 +1,41 @@
+# ==========================
+# Flutter
+# ==========================
+prod_pin/.dart_tool/
+prod_pin/.flutter-plugins
+prod_pin/.flutter-plugins-dependencies
+prod_pin/.packages
+prod_pin/build/
+prod_pin/.idea/
+prod_pin/.vscode/
+
+# iOS
+prod_pin/ios/Pods/
+prod_pin/ios/.symlinks/
+prod_pin/ios/Flutter/ephemeral/
+
+# Android
+prod_pin/android/.gradle/
+prod_pin/android/local.properties
+
+# ==========================
+# Node.js
+# ==========================
+server/node_modules/
+server/.env
+server/.env.*
+!server/.env.example
+
+server/dist/
+server/build/
+server/coverage/
+server/logs/
+server/*.log
+
+# ==========================
+# Common
+# ==========================
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

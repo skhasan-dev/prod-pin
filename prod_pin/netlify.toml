@@ -1,0 +1,9 @@
+[build]
+command = """
+  git clone https://github.com/flutter/flutter.git --branch 3.41.6 --depth 1
+  export PATH="$PWD/flutter/bin:$PATH"
+  flutter config --enable-web
+  flutter pub get
+  flutter build web --target lib/flavors/main_prod.dart
+  """
+publish = "build/web"
