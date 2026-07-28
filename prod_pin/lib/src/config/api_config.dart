@@ -5,6 +5,6 @@ String getApiConfig(Flavor flavor) {
     case Flavor.staging:
       return 'http://localhost:3000/api/';
     case Flavor.prod:
-      return 'http://prod-pin.onrender.com/api/';
+      return 'https://prod-pin.onrender.com/api/';
   }
 }
