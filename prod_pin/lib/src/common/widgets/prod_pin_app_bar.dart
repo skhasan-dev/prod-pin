@@ -6,11 +6,17 @@ import '../../core/extensions/context_extensions.dart';
 class ProdPinAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final String? subtitle;
+  final List<Widget>? actions;
+  final bool showBackButton;
+  final bool returnTrueOnPop;
 
   const ProdPinAppBar({
     super.key,
     required this.title,
     this.subtitle,
+    this.actions,
+    this.showBackButton = false,
+    this.returnTrueOnPop = false,
   });
 
   @override
@@ -22,24 +28,28 @@ class ProdPinAppBar extends StatelessWidget implements PreferredSizeWidget {
       toolbarHeight: subtitle == null ? 72 : 82,
       automaticallyImplyLeading: false,
       titleSpacing: 20,
-      leadingWidth: 60,
-      leading: Center(
-        child: Container(
-          width: 44,
-          height: 44,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: context.appColors.textSecondary.withValues(alpha: .25),
-            ),
-          ),
-          child: IconButton(
-            onPressed: context.pop,
-            icon: const Icon(Icons.arrow_back_rounded, size: 22),
-            splashRadius: 22,
-          ),
-        ),
-      ),
+      leadingWidth: showBackButton ? 60 : 0,
+      leading: showBackButton
+          ? Center(
+              child: Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color:
+                        context.appColors.textSecondary.withValues(alpha: .25),
+                  ),
+                ),
+                child: IconButton(
+                  onPressed: () => context.pop(returnTrueOnPop),
+                  icon: const Icon(Icons.arrow_back_rounded, size: 22),
+                  splashRadius: 22,
+                ),
+              ),
+            )
+          : null,
+      actions: actions,
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,

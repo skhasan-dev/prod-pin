@@ -52,6 +52,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
         appBar: const ProdPinAppBar(
           title: 'Add Category',
           subtitle: 'Create a new Pinterest category',
+          showBackButton: true,
         ),
         body: SafeArea(
           child: Center(

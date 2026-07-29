@@ -65,6 +65,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
         appBar: const ProdPinAppBar(
           title: 'Edit Category',
           subtitle: 'Update your Pinterest category',
+          showBackButton: true,
         ),
         body: Selector<EditCategoryViewModel, bool>(
           selector: (_, vm) => vm.isLoading,
