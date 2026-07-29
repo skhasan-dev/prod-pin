@@ -38,7 +38,7 @@ class ProdPinTextField extends StatelessWidget {
         color: context.appColors.surface,
         borderRadius: BorderRadius.circular(14),
         border: Border.all(
-          color: context.appColors.surfaceElevated.withValues(alpha: .35),
+          color: context.appColors.textSecondary.withValues(alpha: .35),
         ),
         boxShadow: [
           BoxShadow(
