@@ -28,17 +28,43 @@ class _HomeScreenState extends State<HomeScreen> {
     return ChangeNotifierProvider.value(
       value: categoryViewModel,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text('ProdPin', style: context.appTextStyles.headlineMedium),
+        appBar: ProdPinAppBar(
+          title: 'ProdPin',
+          titleTextStyle: context.appTextStyles.headlineMedium.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
           actions: [
-            IconButton(
-              icon: const Icon(Icons.add),
-              onPressed: () async {
+            GestureDetector(
+              onTap: () async {
                 final result = await context.push(AppRoutes.addCategory);
                 if (result == true) {
                   categoryViewModel.getCategories();
                 }
               },
+              child: Container(
+                padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(12),
+                  color: context.appColors.surface,
+                  border: Border.all(
+                    color:
+                        context.appColors.textSecondary.withValues(alpha: 0.2),
+                  ),
+                ),
+                child: Row(
+                  spacing: 8,
+                  children: [
+                    const Icon(Icons.add, size: 20),
+                    Text(
+                      'Add Category',
+                      style: context.appTextStyles.bodyMedium.copyWith(
+                        fontWeight: FontWeight.w500,
+                        color: context.appColors.textPrimary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ],
         ),
@@ -112,7 +138,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                     extra: category,
                                   );
-                                  log('result: $result',name: 'After Edit');
+                                  log('result: $result', name: 'After Edit');
                                   if (result == true) {
                                     categoryViewModel.getCategories();
                                   }

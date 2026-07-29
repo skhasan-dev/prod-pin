@@ -6,6 +6,7 @@ import '../../core/extensions/context_extensions.dart';
 class ProdPinAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
   final String? subtitle;
+  final TextStyle? titleTextStyle;
   final List<Widget>? actions;
   final bool showBackButton;
   final bool returnTrueOnPop;
@@ -15,6 +16,7 @@ class ProdPinAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.title,
     this.subtitle,
     this.actions,
+    this.titleTextStyle,
     this.showBackButton = false,
     this.returnTrueOnPop = false,
   });
@@ -49,16 +51,22 @@ class ProdPinAppBar extends StatelessWidget implements PreferredSizeWidget {
               ),
             )
           : null,
-      actions: actions,
+      actions: [
+        ...actions ?? [],
+        const SizedBox(
+          width: 24,
+        )
+      ],
       title: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
             title,
-            style: context.appTextStyles.titleMedium.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            style: titleTextStyle ??
+                context.appTextStyles.titleMedium.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
           ),
           if (subtitle != null) ...[
             const SizedBox(height: 2),
