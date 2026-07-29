@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prod_pin/src/common/index.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../common/widgets/empty_state_widget.dart';
-import '../../../../common/widgets/prodpin_loader.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/index.dart' show getIt;
 import '../../../../core/navigation/app_routes.dart';
@@ -148,60 +147,55 @@ class _PinsScreenState extends State<PinsScreen> {
     return ChangeNotifierProvider.value(
       value: pinsViewModel,
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(category.name ?? ''),
+        appBar: ProdPinAppBar(
+          title: category.name ?? '',
+          showBackButton: true,
           actions: [
-            Selector<PinsViewModel, bool>(
-              selector: (_, vm) => vm.hasActiveFilters,
-              builder: (_, hasFilters, __) => IconButton(
-                icon: Icon(
-                  Icons.filter_list,
-                  color: hasFilters ? colors.accent : colors.textPrimary,
-                ),
-                onPressed: _openFilters,
-              ),
-            ),
             Selector<PinsViewModel, int>(
               selector: (_, vm) => vm.posts.length,
               builder: (_, count, __) {
                 final isFull =
                     category.maxPins != null && count >= category.maxPins!;
-                return IconButton(
-                  icon: const Icon(Icons.add),
-                  onPressed: isFull
+                return GestureDetector(
+                  onTap: isFull
                       ? null
-                      : () => context.push(
+                      : () async {
+                          final result = await context.push(
                             AppRoutes.addPin,
                             extra: category,
+                          );
+                          if (result == true) {
+                            await pinsViewModel.getPosts(
+                              categoryId: widget.category.id ?? '',
+                            );
+                          }
+                        },
+                  child: Container(
+                    padding: EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      color: context.appColors.surface,
+                      border: Border.all(
+                        color: context.appColors.textSecondary
+                            .withValues(alpha: 0.2),
+                      ),
+                    ),
+                    child: Row(
+                      spacing: 8,
+                      children: [
+                        const Icon(Icons.add, size: 20),
+                        Text(
+                          'Create Pin',
+                          style: context.appTextStyles.bodyMedium.copyWith(
+                            fontWeight: FontWeight.w500,
+                            color: context.appColors.textPrimary,
                           ),
+                        ),
+                      ],
+                    ),
+                  ),
                 );
               },
-            ),
-            PopupMenuButton<String>(
-              color: colors.surfaceElevated,
-              onSelected: (value) {
-                if (value == 'edit') {
-                  context.push(
-                    AppRoutes.editCategoryPath(category.id ?? ''),
-                    extra: category,
-                  );
-                } else if (value == 'delete') {
-                  _confirmDeleteCategory();
-                }
-              },
-              itemBuilder: (context) => [
-                const PopupMenuItem(
-                  value: 'edit',
-                  child: Text('Edit Category'),
-                ),
-                PopupMenuItem(
-                  value: 'delete',
-                  child: Text(
-                    'Delete Category',
-                    style: TextStyle(color: context.appColors.error),
-                  ),
-                ),
-              ],
             ),
           ],
         ),
@@ -219,26 +213,51 @@ class _PinsScreenState extends State<PinsScreen> {
                   children: [
                     if (category.maxPins != null)
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        child: Row(
+                          spacing: 20,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(20),
-                              child: LinearProgressIndicator(
-                                value:
-                                    (pinCount / category.maxPins!).clamp(0, 1),
-                                minHeight: 6,
-                                backgroundColor: colors.surfaceElevated,
-                                valueColor: AlwaysStoppedAnimation(
-                                  isFull ? colors.accent : colors.ready,
-                                ),
+                            Expanded(
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 8),
+                                    child: ClipRRect(
+                                      borderRadius: BorderRadius.circular(20),
+                                      child: LinearProgressIndicator(
+                                        value: (pinCount / category.maxPins!)
+                                            .clamp(0, 1),
+                                        minHeight: 6,
+                                        backgroundColor: colors.surfaceElevated,
+                                        valueColor: AlwaysStoppedAnimation(
+                                          isFull ? colors.accent : colors.ready,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    '$pinCount / ${category.maxPins} pins',
+                                    style: textStyles.bodySmall,
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 6),
-                            Text(
-                              '$pinCount / ${category.maxPins} pins',
-                              style: textStyles.bodySmall,
+                            Selector<PinsViewModel, bool>(
+                              selector: (_, vm) => vm.hasActiveFilters,
+                              builder: (_, hasFilters, __) => GestureDetector(
+                                onTap: _openFilters,
+                                child: Icon(
+                                  Icons.filter_list,
+                                  color: hasFilters
+                                      ? colors.accent
+                                      : colors.textPrimary,
+                                  size: 28,
+                                ),
+                              ),
                             ),
                           ],
                         ),
