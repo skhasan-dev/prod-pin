@@ -1,11 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prod_pin/src/common/index.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../common/widgets/image_url_list_field.dart';
-import '../../../../common/widgets/prodpin_button.dart';
-import '../../../../common/widgets/prodpin_loader.dart';
-import '../../../../common/widgets/prodpin_text_field.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/index.dart' show getIt;
 import '../view_model/edit_pin_view_model.dart';
@@ -79,7 +76,7 @@ class _EditPinScreenState extends State<EditPinScreen> {
     };
 
     final failure = await editPinViewModel.updatePost(widget.id, body);
-    if (failure == null && mounted) context.pop();
+    if (failure == null && mounted) context.pop(true);
   }
 
   @override
@@ -96,97 +93,103 @@ class _EditPinScreenState extends State<EditPinScreen> {
             return const Scaffold(body: Center(child: ProdPinLoader()));
           }
           return Scaffold(
-            appBar: AppBar(title: const Text('Edit Pin')),
+            appBar: const ProdPinAppBar(
+              title: 'Edit Pin',
+              subtitle: 'Update your Pinterest pin',
+              showBackButton: true,
+            ),
             body: SafeArea(
               child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ProdPinTextField(
-                                label: 'Amazon URL',
-                                controller: _amazonUrlController,
-                                keyboardType: TextInputType.url,
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                        ? 'Amazon URL is required'
-                                        : null,
-                              ),
-                              const SizedBox(height: 16),
-                              ProdPinTextField(
-                                label: 'Affiliated Link (optional)',
-                                controller: _affiliatedLinkController,
-                                keyboardType: TextInputType.url,
-                              ),
-                              const SizedBox(height: 16),
-                              ImageUrlListField(
-                                urls: _imageUrls,
-                                onUrlsChanged: (urls) =>
-                                    setState(() => _imageUrls = urls),
-                              ),
-                              const SizedBox(height: 20),
-                              Container(
-                                padding: const EdgeInsets.all(14),
-                                decoration: BoxDecoration(
-                                  color: colors.surfaceElevated,
-                                  borderRadius: BorderRadius.circular(10),
+                padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
+                child: _buildCategoryForm(
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                ProdPinTextField(
+                                  label: 'Amazon URL',
+                                  controller: _amazonUrlController,
+                                  keyboardType: TextInputType.url,
+                                  validator: (v) =>
+                                      (v == null || v.trim().isEmpty)
+                                          ? 'Amazon URL is required'
+                                          : null,
                                 ),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Text(
-                                        'Regenerate AI Content',
-                                        style: textStyles.titleMedium
-                                            .copyWith(fontSize: 14),
+                                const SizedBox(height: 16),
+                                ProdPinTextField(
+                                  label: 'Affiliated Link (optional)',
+                                  controller: _affiliatedLinkController,
+                                  keyboardType: TextInputType.url,
+                                ),
+                                const SizedBox(height: 16),
+                                ImageUrlListField(
+                                  urls: _imageUrls,
+                                  onUrlsChanged: (urls) =>
+                                      setState(() => _imageUrls = urls),
+                                ),
+                                const SizedBox(height: 20),
+                                Container(
+                                  padding: const EdgeInsets.all(14),
+                                  decoration: BoxDecoration(
+                                    color: colors.surfaceElevated,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Expanded(
+                                        child: Text(
+                                          'Regenerate AI Content',
+                                          style: textStyles.titleMedium
+                                              .copyWith(fontSize: 14),
+                                        ),
                                       ),
-                                    ),
-                                    Switch(
-                                      value: _regenerate,
-                                      activeThumbColor: colors.accent,
-                                      onChanged: (v) =>
-                                          setState(() => _regenerate = v),
-                                    ),
-                                  ],
+                                      Switch(
+                                        value: _regenerate,
+                                        activeThumbColor: colors.accent,
+                                        onChanged: (v) =>
+                                            setState(() => _regenerate = v),
+                                      ),
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              if (_regenerate) ...[
-                                const SizedBox(height: 16),
-                                ProdPinTextField(
-                                  label: 'Product Title (for AI)',
-                                  controller: _rawTitleController,
-                                  validator: (v) => _regenerate &&
-                                          (v == null || v.trim().isEmpty)
-                                      ? 'Required when regenerating'
-                                      : null,
-                                ),
-                                const SizedBox(height: 16),
-                                ProdPinTextField(
-                                  label: 'Product Description (for AI)',
-                                  controller: _rawDescriptionController,
-                                  maxLines: 4,
-                                  validator: (v) => _regenerate &&
-                                          (v == null || v.trim().isEmpty)
-                                      ? 'Required when regenerating'
-                                      : null,
-                                ),
+                                if (_regenerate) ...[
+                                  const SizedBox(height: 16),
+                                  ProdPinTextField(
+                                    label: 'Product Title (for AI)',
+                                    controller: _rawTitleController,
+                                    validator: (v) => _regenerate &&
+                                            (v == null || v.trim().isEmpty)
+                                        ? 'Required when regenerating'
+                                        : null,
+                                  ),
+                                  const SizedBox(height: 16),
+                                  ProdPinTextField(
+                                    label: 'Product Description (for AI)',
+                                    controller: _rawDescriptionController,
+                                    maxLines: 4,
+                                    validator: (v) => _regenerate &&
+                                            (v == null || v.trim().isEmpty)
+                                        ? 'Required when regenerating'
+                                        : null,
+                                  ),
+                                ],
                               ],
-                            ],
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      ProdPinButton(
-                        label: 'Update Pin',
-                        isLoading: false,
-                        onPressed: _submit,
-                      ),
-                    ],
+                        const SizedBox(height: 16),
+                        ProdPinButton(
+                          label: 'Update Pin',
+                          isLoading: false,
+                          onPressed: _submit,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -195,5 +198,27 @@ class _EditPinScreenState extends State<EditPinScreen> {
         },
       ),
     );
+  }
+
+  Widget _buildCategoryForm(Widget child) {
+    Widget? form;
+    if (context.isDesktop) {
+      form = Card(
+        elevation: 0,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(
+            color: context.appColors.surfaceElevated.withValues(alpha: .2),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: child,
+        ),
+      );
+    }
+
+    return form ?? child;
   }
 }
