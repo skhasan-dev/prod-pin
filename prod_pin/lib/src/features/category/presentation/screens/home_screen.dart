@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:prod_pin/src/common/index.dart';
@@ -31,7 +33,12 @@ class _HomeScreenState extends State<HomeScreen> {
           actions: [
             IconButton(
               icon: const Icon(Icons.add),
-              onPressed: () => context.push(AppRoutes.addCategory),
+              onPressed: () async {
+                final result = await context.push(AppRoutes.addCategory);
+                if (result == true) {
+                  categoryViewModel.getCategories();
+                }
+              },
             ),
           ],
         ),
@@ -47,7 +54,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         message: 'No categories yet. Add your first one!',
                         icon: Icons.category_outlined,
                         actionLabel: 'Add Category',
-                        onAction: () => context.push(AppRoutes.addCategory),
+                        onAction: () async {
+                          final result =
+                              await context.push(AppRoutes.addCategory);
+                          if (result == true) {
+                            categoryViewModel.getCategories();
+                          }
+                        },
                       )
                     : LayoutBuilder(
                         builder: (context, constraints) {
@@ -92,13 +105,17 @@ class _HomeScreenState extends State<HomeScreen> {
                                   AppRoutes.categoryDetail,
                                   extra: category,
                                 ),
-                                onEdit: () {
-                                  context.push(
+                                onEdit: () async {
+                                  final result = await context.push(
                                     AppRoutes.editCategoryPath(
                                       category.id ?? '',
                                     ),
                                     extra: category,
                                   );
+                                  log('result: $result',name: 'After Edit');
+                                  if (result == true) {
+                                    categoryViewModel.getCategories();
+                                  }
                                 },
                               );
                             },

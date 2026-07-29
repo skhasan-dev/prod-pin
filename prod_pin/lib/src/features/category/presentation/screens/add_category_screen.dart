@@ -41,7 +41,7 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
       maxPins: int.tryParse(_maxPinsController.text.trim()),
     );
 
-    if (mounted) context.pop();
+    if (mounted) context.pop(true);
   }
 
   @override

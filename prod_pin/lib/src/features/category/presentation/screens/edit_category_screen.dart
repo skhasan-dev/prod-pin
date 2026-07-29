@@ -27,14 +27,12 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      _nameController = TextEditingController(text: widget.category.name);
-      _coverImageController =
-          TextEditingController(text: widget.category.coverImage ?? '');
-      _maxPinsController = TextEditingController(
-        text: widget.category.maxPins?.toString() ?? '',
-      );
-    });
+    _nameController = TextEditingController(text: widget.category.name);
+    _coverImageController =
+        TextEditingController(text: widget.category.coverImage ?? '');
+    _maxPinsController = TextEditingController(
+      text: widget.category.maxPins?.toString() ?? '',
+    );
   }
 
   @override
@@ -57,7 +55,7 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
       maxPins: int.tryParse(_maxPinsController.text.trim()),
     );
 
-    if (mounted) context.pop();
+    if (mounted) context.pop(true);
   }
 
   @override
