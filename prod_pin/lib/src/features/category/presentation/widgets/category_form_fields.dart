@@ -48,11 +48,11 @@ class CategoryFormFields extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 child: Image.network(
                   url,
-                  height: 140,
+                  height: context.isDesktop ? 220 : 140,
                   width: double.infinity,
                   fit: BoxFit.cover,
                   errorBuilder: (_, __, ___) => Container(
-                    height: 140,
+                    height: context.isDesktop ? 220 : 140,
                     color: colors.surfaceElevated,
                     alignment: Alignment.center,
                     child: Icon(

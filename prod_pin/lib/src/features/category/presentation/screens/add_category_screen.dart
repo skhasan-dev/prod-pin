@@ -49,35 +49,70 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
     return ChangeNotifierProvider.value(
       value: addCategoryViewModel,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Add Category')),
+        appBar: const ProdPinAppBar(
+          title: 'Add Category',
+          subtitle: 'Create a new Pinterest category',
+        ),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: CategoryFormFields(
-                        nameController: _nameController,
-                        coverImageController: _coverImageController,
-                        maxPinsController: _maxPinsController,
-                      ),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 700),
+              child: Padding(
+                padding: const EdgeInsets.all(24),
+                child: _buildCategoryForm(
+                  Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: CategoryFormFields(
+                              nameController: _nameController,
+                              coverImageController: _coverImageController,
+                              maxPinsController: _maxPinsController,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          width: double.infinity,
+                          child: ProdPinButton(
+                            label: 'Create Category',
+                            isLoading: _isSaving,
+                            onPressed: _submit,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 16),
-                  ProdPinButton(
-                    label: 'Create Category',
-                    isLoading: _isSaving,
-                    onPressed: _submit,
-                  ),
-                ],
+                ),
               ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildCategoryForm(Widget child) {
+    Widget? form;
+    if (context.isDesktop) {
+      form = Card(
+        elevation: 0,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(
+            color: context.appColors.surfaceElevated.withValues(alpha: .2),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: child,
+        ),
+      );
+    }
+
+    return form ?? child;
   }
 }
