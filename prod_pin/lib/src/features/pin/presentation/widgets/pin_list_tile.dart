@@ -35,6 +35,7 @@ class PinListTile extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
+      hoverColor: Colors.transparent,
       borderRadius: BorderRadius.circular(12),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
@@ -69,10 +70,11 @@ class PinListTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: textStyles.titleMedium.copyWith(fontSize: 14),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
                   Wrap(
                     spacing: 6,
                     runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
                       ...visibleTags.map((t) => TagChip(label: t)),
                       if (remaining > 0)

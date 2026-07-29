@@ -14,8 +14,16 @@ class TagChip extends StatelessWidget {
       decoration: BoxDecoration(
         color: context.appColors.surfaceElevated,
         borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: context.appColors.textMuted,
+          width: 0.5,
+        ),
       ),
-      child: Text('#$label', style: context.appTextStyles.bodySmall),
+      child: Text(
+        '#$label',
+        style: context.appTextStyles.bodySmall
+            .copyWith(color: context.appColors.textMuted),
+      ),
     );
   }
 }

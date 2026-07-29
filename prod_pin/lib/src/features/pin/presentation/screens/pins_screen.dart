@@ -213,7 +213,7 @@ class _PinsScreenState extends State<PinsScreen> {
                   children: [
                     if (category.maxPins != null)
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
                         child: Row(
                           spacing: 20,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -293,9 +293,13 @@ class _PinsScreenState extends State<PinsScreen> {
                                       ),
                             )
                           : ListView.builder(
-                              padding: const EdgeInsets.symmetric(vertical: 12),
-                              itemCount: posts.length,
+                              padding: const EdgeInsets.only(bottom: 12),
+                              itemCount: posts.length + 1,
+                              physics: BouncingScrollPhysics(),
                               itemBuilder: (context, index) {
+                                if (posts.length == index) {
+                                  return SizedBox(height: 60);
+                                }
                                 final post = posts[index];
                                 return PinListTile(
                                   post: post,
