@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prod_pin/src/common/index.dart';
 import 'package:prod_pin/src/core/index.dart';
 import 'package:prod_pin/src/features/category/index.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../common/widgets/prodpin_button.dart';
 
 class EditCategoryScreen extends StatefulWidget {
   final Category category;
@@ -63,33 +62,43 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
     return ChangeNotifierProvider.value(
       value: editCategoryViewModel,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Edit Category')),
+        appBar: const ProdPinAppBar(
+          title: 'Edit Category',
+          subtitle: 'Update your Pinterest category',
+        ),
         body: Selector<EditCategoryViewModel, bool>(
           selector: (_, vm) => vm.isLoading,
           builder: (_, isLoading, __) {
             return SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      Expanded(
-                        child: SingleChildScrollView(
-                          child: CategoryFormFields(
-                            nameController: _nameController,
-                            coverImageController: _coverImageController,
-                            maxPinsController: _maxPinsController,
-                          ),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 700),
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: _buildCategoryForm(
+                      Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            Expanded(
+                              child: SingleChildScrollView(
+                                child: CategoryFormFields(
+                                  nameController: _nameController,
+                                  coverImageController: _coverImageController,
+                                  maxPinsController: _maxPinsController,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                            ProdPinButton(
+                              label: 'Update Category',
+                              isLoading: isLoading,
+                              onPressed: _submit,
+                            ),
+                          ],
                         ),
                       ),
-                      const SizedBox(height: 16),
-                      ProdPinButton(
-                        label: 'Update Category',
-                        isLoading: isLoading,
-                        onPressed: _submit,
-                      ),
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -98,5 +107,27 @@ class _EditCategoryScreenState extends State<EditCategoryScreen> {
         ),
       ),
     );
+  }
+
+  Widget _buildCategoryForm(Widget child) {
+    Widget? form;
+    if (context.isDesktop) {
+      form = Card(
+        elevation: 0,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(
+            color: context.appColors.surfaceElevated.withValues(alpha: .2),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: child,
+        ),
+      );
+    }
+
+    return form ?? child;
   }
 }
