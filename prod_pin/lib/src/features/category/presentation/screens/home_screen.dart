@@ -79,7 +79,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               crossAxisCount: columns,
                               mainAxisSpacing: 16,
                               crossAxisSpacing: 16,
-                              childAspectRatio: 1.1,
+                              childAspectRatio: 1.285,
                             ),
                             itemCount: categories.length,
                             itemBuilder: (context, index) {
@@ -92,6 +92,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                   AppRoutes.categoryDetail,
                                   extra: category,
                                 ),
+                                onEdit: () {
+                                  context.push(
+                                    AppRoutes.editCategoryPath(
+                                      category.id ?? '',
+                                    ),
+                                    extra: category,
+                                  );
+                                },
                               );
                             },
                           );
