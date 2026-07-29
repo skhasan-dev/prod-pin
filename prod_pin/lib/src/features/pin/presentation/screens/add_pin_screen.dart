@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:prod_pin/src/common/index.dart';
 import 'package:provider/provider.dart';
 
-import '../../../../common/widgets/image_url_list_field.dart';
-import '../../../../common/widgets/prodpin_button.dart';
-import '../../../../common/widgets/prodpin_text_field.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/index.dart' show getIt;
 import '../../../category/data/entities/category.dart';
@@ -63,99 +61,127 @@ class _AddPinScreenState extends State<AddPinScreen> {
     return ChangeNotifierProvider.value(
       value: addPinViewModel,
       child: Scaffold(
-        appBar: AppBar(title: const Text('Add Pin')),
+        appBar: const ProdPinAppBar(
+          title: 'Add Pin',
+          subtitle: 'Create a new Pin category',
+          showBackButton: true,
+        ),
         body: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ProdPinTextField(
-                            label: 'Amazon URL',
-                            controller: _amazonUrlController,
-                            hint: 'https://amazon.in/dp/...',
-                            keyboardType: TextInputType.url,
-                            validator: (v) => (v == null || v.trim().isEmpty)
-                                ? 'Amazon URL is required'
-                                : null,
-                          ),
-                          const SizedBox(height: 16),
-                          ProdPinTextField(
-                            label: 'Product Title (for AI)',
-                            controller: _rawTitleController,
-                            hint: 'Raw product title',
-                            validator: (v) => (v == null || v.trim().isEmpty)
-                                ? 'Product title is required'
-                                : null,
-                          ),
-                          const SizedBox(height: 16),
-                          ProdPinTextField(
-                            label: 'Product Description (for AI)',
-                            controller: _rawDescriptionController,
-                            hint: 'Raw product description',
-                            maxLines: 4,
-                            validator: (v) => (v == null || v.trim().isEmpty)
-                                ? 'Product description is required'
-                                : null,
-                          ),
-                          const SizedBox(height: 16),
-                          ProdPinTextField(
-                            label: 'Affiliated Link (optional)',
-                            controller: _affiliatedLinkController,
-                            hint: 'https://amzn.to/...',
-                            keyboardType: TextInputType.url,
-                          ),
-                          const SizedBox(height: 16),
-                          ImageUrlListField(
-                            urls: _imageUrls,
-                            onUrlsChanged: (urls) =>
-                                setState(() => _imageUrls = urls),
-                          ),
-                          const SizedBox(height: 16),
-                          Text('Category', style: textStyles.labelMedium),
-                          const SizedBox(height: 6),
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 14,
-                              vertical: 12,
+            padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
+            child: _buildCategoryForm(
+              Form(
+                key: _formKey,
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            ProdPinTextField(
+                              label: 'Amazon URL',
+                              controller: _amazonUrlController,
+                              hint: 'https://amazon.in/...',
+                              keyboardType: TextInputType.url,
+                              validator: (v) => (v == null || v.trim().isEmpty)
+                                  ? 'Amazon URL is required'
+                                  : null,
                             ),
-                            decoration: BoxDecoration(
-                              color: colors.surfaceElevated,
-                              borderRadius: BorderRadius.circular(10),
+                            const SizedBox(height: 16),
+                            ProdPinTextField(
+                              label: 'Product Title (for AI)',
+                              controller: _rawTitleController,
+                              hint: 'Raw product title',
+                              validator: (v) => (v == null || v.trim().isEmpty)
+                                  ? 'Product title is required'
+                                  : null,
                             ),
-                            child: Text(
-                              widget.category.name ?? '',
-                              style: TextStyle(
-                                color: colors.textPrimary,
-                                fontSize: 14,
+                            const SizedBox(height: 16),
+                            ProdPinTextField(
+                              label: 'Product Description (for AI)',
+                              controller: _rawDescriptionController,
+                              hint: 'Raw product description',
+                              maxLines: 4,
+                              validator: (v) => (v == null || v.trim().isEmpty)
+                                  ? 'Product description is required'
+                                  : null,
+                            ),
+                            const SizedBox(height: 16),
+                            ProdPinTextField(
+                              label: 'Affiliated Link (optional)',
+                              controller: _affiliatedLinkController,
+                              hint: 'https://amzn.to/...',
+                              keyboardType: TextInputType.url,
+                            ),
+                            const SizedBox(height: 16),
+                            ImageUrlListField(
+                              urls: _imageUrls,
+                              onUrlsChanged: (urls) =>
+                                  setState(() => _imageUrls = urls),
+                            ),
+                            const SizedBox(height: 16),
+                            Text('Category', style: textStyles.labelMedium),
+                            const SizedBox(height: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colors.surfaceElevated,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Text(
+                                widget.category.name ?? '',
+                                style: TextStyle(
+                                  color: colors.textPrimary,
+                                  fontSize: 14,
+                                ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Selector<AddPinViewModel, bool>(
-                    selector: (_, vm) => vm.isLoading,
-                    builder: (_, isLoading, __) => ProdPinButton(
-                      label: 'Create Pin & Generate',
-                      isLoading: isLoading,
-                      onPressed: _submit,
+                    const SizedBox(height: 16),
+                    Selector<AddPinViewModel, bool>(
+                      selector: (_, vm) => vm.isLoading,
+                      builder: (_, isLoading, __) => ProdPinButton(
+                        label: 'Create Pin & Generate',
+                        isLoading: isLoading,
+                        onPressed: _submit,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildCategoryForm(Widget child) {
+    Widget? form;
+    if (context.isDesktop) {
+      form = Card(
+        elevation: 0,
+        clipBehavior: Clip.antiAlias,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide(
+            color: context.appColors.surfaceElevated.withValues(alpha: .2),
+          ),
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: child,
+        ),
+      );
+    }
+
+    return form ?? child;
   }
 }

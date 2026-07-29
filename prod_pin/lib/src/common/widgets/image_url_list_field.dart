@@ -77,7 +77,10 @@ class _ImageUrlListFieldState extends State<ImageUrlListField> {
                   ),
                   elevation: 0,
                 ),
-                child: const Text('Add'),
+                child: Text(
+                  'Add',
+                  style: context.appTextStyles.titleMedium,
+                ),
               ),
             ),
           ],
@@ -92,7 +95,9 @@ class _ImageUrlListFieldState extends State<ImageUrlListField> {
                   (url) => Chip(
                     label: Text(
                       url.truncate(28),
-                      style: textStyles.bodySmall,
+                      style: textStyles.bodySmall.copyWith(
+                        color: context.appColors.textPrimary,
+                      ),
                     ),
                     backgroundColor: colors.surfaceElevated,
                     deleteIcon: Icon(
@@ -103,7 +108,7 @@ class _ImageUrlListFieldState extends State<ImageUrlListField> {
                     onDeleted: () => _removeUrl(url),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
-                      side: BorderSide.none,
+                      side: BorderSide(width: 0.2, color: colors.textPrimary),
                     ),
                   ),
                 )
