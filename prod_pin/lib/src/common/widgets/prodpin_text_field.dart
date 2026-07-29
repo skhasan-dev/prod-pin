@@ -28,32 +28,73 @@ class ProdPinTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label, style: context.appTextStyles.labelMedium),
-        const SizedBox(height: 6),
-        TextFormField(
-          controller: controller,
-          maxLines: maxLines,
-          keyboardType: keyboardType,
-          validator: validator,
-          readOnly: readOnly,
-          onTap: onTap,
-          style: context.appTextStyles.bodyMedium.copyWith(
-            color: context.appColors.textPrimary,
-            fontSize: 14,
+    return Container(
+      clipBehavior: Clip.antiAliasWithSaveLayer,
+      padding: const EdgeInsets.symmetric(
+        horizontal: 12,
+        vertical: 12,
+      ),
+      decoration: BoxDecoration(
+        color: context.appColors.surface,
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: context.appColors.surfaceElevated.withValues(alpha: .35),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: .03),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
-          decoration: InputDecoration(
-            hintText: hint,
-            suffixIcon: suffix,
-            contentPadding: const EdgeInsets.symmetric(
-              horizontal: 14,
-              vertical: 14,
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(left: 4),
+            child: Text(
+              label,
+              style: context.appTextStyles.labelMedium.copyWith(
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
-        ),
-      ],
+          const SizedBox(height: 8),
+          TextFormField(
+            controller: controller,
+            maxLines: maxLines,
+            keyboardType: keyboardType,
+            validator: validator,
+            readOnly: readOnly,
+            onTap: onTap,
+            style: context.appTextStyles.bodyMedium.copyWith(
+              color: context.appColors.textPrimary,
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+            ),
+            decoration: InputDecoration(
+              hintText: hint,
+              hintStyle: context.appTextStyles.bodyMedium.copyWith(
+                color: context.appColors.textSecondary.withValues(alpha: 0.6),
+                fontWeight: FontWeight.w400,
+                fontSize: 14,
+              ),
+              suffixIcon: suffix,
+              hoverColor: Colors.transparent,
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              errorBorder: InputBorder.none,
+              focusedErrorBorder: InputBorder.none,
+              fillColor: context.appColors.surface,
+              contentPadding: EdgeInsets.zero,
+              isDense: true,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
