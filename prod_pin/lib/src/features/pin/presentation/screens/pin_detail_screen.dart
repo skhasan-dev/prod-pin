@@ -1,16 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:prod_pin/src/common/index.dart';
+import 'package:prod_pin/src/core/index.dart';
+import 'package:prod_pin/src/features/pin/index.dart';
 import 'package:provider/provider.dart';
-
-import '../../../../common/widgets/prodpin_loader.dart';
-import '../../../../common/widgets/status_badge.dart';
-import '../../../../common/widgets/tag_chip.dart';
-import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/index.dart' show getIt;
-import '../../../../core/navigation/app_routes.dart';
-import '../view_model/pin_detail_view_model.dart';
-import '../widgets/affiliated_link_dialog.dart';
 
 class PinDetailScreen extends StatefulWidget {
   final String id;
@@ -63,12 +57,9 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
               final textStyles = context.appTextStyles;
 
               return Scaffold(
-                appBar: AppBar(
-                  title: Text(
-                    post.pinterestTitle ?? 'Pin',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                  ),
+                appBar: ProdPinAppBar(
+                  title: post.pinterestTitle ?? 'Pin',
+                  showBackButton: true,
                   actions: [
                     IconButton(
                       icon: const Icon(Icons.edit_outlined),
@@ -79,7 +70,7 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
                 ),
                 body: SafeArea(
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.all(20),
+                    padding: const EdgeInsets.fromLTRB(20, 12, 20, 20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
