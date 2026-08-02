@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:go_router/go_router.dart';
@@ -40,6 +43,11 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
   }
 
   Future<void> _launchUrl(String url) async {
+    if (kDebugMode) {
+      _copyToClipboard(url, 'Copied URL');
+      log(url, name: 'Pinterest URL');
+    }
+
     final uri = Uri.tryParse(url);
     if (uri == null) return;
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
@@ -49,6 +57,24 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
         );
       }
     }
+  }
+
+  Uri _buildPinterestUrl(Post post) {
+    final destination = post.affiliatedLink ?? post.amazonUrl;
+    final allTags = [...post.tags, 'affiliated'];
+    final parts = [
+      post.pinterestDescription ?? '',
+      allTags.map((t) => '#$t').join(' '),
+    ].where((s) => s.isNotEmpty).toList();
+    final description = parts.join('\n\n');
+
+    final uri = Uri.https('www.pinterest.com', '/pin/create/button/', {
+      if ((post.imageUrls as List).isNotEmpty) 'media': (post.imageUrls).first,
+      'url': destination,
+      if (description.isNotEmpty) 'description': description,
+    });
+
+    return uri;
   }
 
   @override
@@ -146,6 +172,14 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
                             }
                           },
                         ),
+                        const SizedBox(height: 12),
+                        if (post.imageGenerated ==
+                            PinImageGenerationStatus.generated)
+                          _PinterestButton(
+                            onTap: () async {
+                              _launchUrl(_buildPinterestUrl(post).toString());
+                            },
+                          ),
                       ],
                     ),
                   ),
@@ -263,7 +297,7 @@ class _OverlayTextCard extends StatelessWidget {
 // ── Status / category / dates row ────────────────────────────────────────────
 
 class _MetadataRow extends StatelessWidget {
-  final dynamic post;
+  final Post post;
 
   const _MetadataRow({required this.post});
 
@@ -283,7 +317,7 @@ class _MetadataRow extends StatelessWidget {
           children: [
             StatusBadge(status: post.status),
             ImageGenBadge(value: post.imageGenerated),
-            _CategoryBadge(name: post.category.name),
+            _CategoryBadge(name: post.category.name ?? ''),
           ],
         ),
         const SizedBox(height: 8),
@@ -538,6 +572,47 @@ class _CtaButton extends StatelessWidget {
               label,
               style: TextStyle(
                 color: isPrimary ? Colors.white : colors.textSecondary,
+                fontSize: 13,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Post to Pinterest button ──────────────────────────────────────────────────
+
+class _PinterestButton extends StatelessWidget {
+  final VoidCallback onTap;
+
+  const _PinterestButton({required this.onTap});
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.appColors;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: colors.accent),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.push_pin_outlined, size: 16, color: colors.accent),
+            const SizedBox(width: 8),
+            Text(
+              'Post to Pinterest',
+              style: TextStyle(
+                color: colors.accent,
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
               ),
