@@ -1,17 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:prod_pin/src/common/index.dart';
+import 'package:prod_pin/src/core/index.dart'
+    show
+        getIt,
+        AppUtils,
+        ResponsiveContext,
+        AppRoutes,
+        PinImageGenerationStatusX,
+        PinStatusX,
+        FailureExt;
 import 'package:provider/provider.dart';
 
-import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/index.dart' show getIt;
-import '../../../../core/navigation/app_routes.dart';
-import '../../../../core/utils/enums.dart';
 import '../../../category/data/entities/category.dart';
 import '../../../category/presentation/view_model/category_view_model.dart';
 import '../../data/entities/post.dart';
 import '../view_model/pins_view_model.dart';
-import '../widgets/affiliated_link_dialog.dart';
 import '../widgets/filter_bottom_sheet.dart';
 import '../widgets/pin_list_tile.dart';
 
@@ -102,39 +106,6 @@ class _PinsScreenState extends State<PinsScreen> {
       final failure =
           await categoryViewModel.deleteCategory(widget.category.id ?? '');
       if (failure == null && mounted) context.pop();
-    }
-  }
-
-  Future<void> _confirmDeletePost(String postId) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: context.appColors.surface,
-        title: Text(
-          'Delete Pin',
-          style: TextStyle(color: context.appColors.textPrimary),
-        ),
-        content: Text(
-          'This action cannot be undone.',
-          style: TextStyle(color: context.appColors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(
-              'Delete',
-              style: TextStyle(color: context.appColors.error),
-            ),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true) {
-      pinsViewModel.deletePost(postId);
     }
   }
 
@@ -307,9 +278,10 @@ class _PinsScreenState extends State<PinsScreen> {
                                       .push(AppRoutes.pinDetailPath(post.id)),
                                   onEdit: () => context
                                       .push(AppRoutes.editPinPath(post.id)),
-                                  onDelete: () => _confirmDeletePost(post.id),
+                                  onDelete: () => showDeleteDialog(post.id),
                                   onLinkTap: () async {
-                                    final link = await showAffiliatedLinkDialog(
+                                    final link =
+                                        await AppUtils.showAffiliatedLinkDialog(
                                       context,
                                       currentLink: post.affiliatedLink,
                                     );
@@ -341,5 +313,20 @@ class _PinsScreenState extends State<PinsScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> showDeleteDialog(String postId) async {
+    final isConfirmed = await AppUtils.showDeleteDialog(
+      context,
+      title: 'Delete Pin',
+      description: 'This action cannot be undone.',
+      positiveActionLabel: 'Delete',
+      negativeActionLabel: 'Cancel',
+    );
+
+    if (isConfirmed) {
+      final failure = await pinsViewModel.deletePost(postId);
+      failure?.showError(context);
+    }
   }
 }

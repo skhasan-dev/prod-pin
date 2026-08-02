@@ -162,7 +162,8 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
                                   post.affiliatedLink!, 'Affiliated link')
                               : null,
                           onAddAffiliated: () async {
-                            final link = await showAffiliatedLinkDialog(
+                            final link =
+                                await AppUtils.showAffiliatedLinkDialog(
                               context,
                               currentLink: post.affiliatedLink,
                             );
