@@ -4,7 +4,7 @@ import 'package:prod_pin/src/common/index.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/index.dart' show getIt;
+import '../../../../core/index.dart' show getIt, AppUtils;
 import '../../../category/data/entities/category.dart';
 import '../view_model/add_pin_view_model.dart';
 
@@ -36,23 +36,6 @@ class _AddPinScreenState extends State<AddPinScreen> {
     super.dispose();
   }
 
-  Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final body = {
-      'amazon_url': _amazonUrlController.text.trim(),
-      'raw_title': _rawTitleController.text.trim(),
-      'raw_description': _rawDescriptionController.text.trim(),
-      if (_affiliatedLinkController.text.trim().isNotEmpty)
-        'affiliated_link': _affiliatedLinkController.text.trim(),
-      'image_urls': _imageUrls,
-      'category': widget.category.id,
-    };
-
-    final failure = await addPinViewModel.createPost(body);
-    if (failure == null && mounted) context.pop();
-  }
-
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
@@ -69,7 +52,8 @@ class _AddPinScreenState extends State<AddPinScreen> {
         body: SafeArea(
           child: Padding(
             padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
-            child: _buildCategoryForm(
+            child: AppUtils.wrapDesktopCard(
+              context,
               Form(
                 key: _formKey,
                 child: Column(
@@ -163,25 +147,20 @@ class _AddPinScreenState extends State<AddPinScreen> {
     );
   }
 
-  Widget _buildCategoryForm(Widget child) {
-    Widget? form;
-    if (context.isDesktop) {
-      form = Card(
-        elevation: 0,
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(
-            color: context.appColors.surfaceElevated.withValues(alpha: .2),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: child,
-        ),
-      );
-    }
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
 
-    return form ?? child;
+    final body = {
+      'amazon_url': _amazonUrlController.text.trim(),
+      'raw_title': _rawTitleController.text.trim(),
+      'raw_description': _rawDescriptionController.text.trim(),
+      if (_affiliatedLinkController.text.trim().isNotEmpty)
+        'affiliated_link': _affiliatedLinkController.text.trim(),
+      'image_urls': _imageUrls,
+      'category': widget.category.id,
+    };
+
+    final failure = await addPinViewModel.createPost(body);
+    if (failure == null && mounted) context.pop();
   }
 }

@@ -40,75 +40,6 @@ class _PinsScreenState extends State<PinsScreen> {
     });
   }
 
-  void _openFilters() {
-    final colors = context.appColors;
-    showModalBottomSheet(
-      context: context,
-      backgroundColor: colors.surface,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) => FilterBottomSheet(
-        initialStatus: pinsViewModel.statusFilter,
-        initialImageGenerated: pinsViewModel.imageGeneratedFilter,
-        initialDateFrom: pinsViewModel.dateFrom,
-        initialDateTo: pinsViewModel.dateTo,
-        onApply: (status, imageGenerated, from, to) {
-          pinsViewModel.updateFilters(
-            status: status,
-            imageGenerated: imageGenerated,
-            from: from,
-            to: to,
-            clearFrom: from == null,
-            clearTo: to == null,
-          );
-          pinsViewModel.getPosts(categoryId: widget.category.id ?? '');
-        },
-        onClear: () {
-          pinsViewModel.clearFilters();
-          pinsViewModel.getPosts(categoryId: widget.category.id ?? '');
-        },
-      ),
-    );
-  }
-
-  Future<void> _confirmDeleteCategory() async {
-    final colors = context.appColors;
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        backgroundColor: colors.surface,
-        title: Text(
-          'Delete Category',
-          style: TextStyle(color: context.appColors.textPrimary),
-        ),
-        content: Text(
-          'This will not delete the pins inside it. Continue?',
-          style: TextStyle(color: context.appColors.textSecondary),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: Text(
-              'Delete',
-              style: TextStyle(color: context.appColors.error),
-            ),
-          ),
-        ],
-      ),
-    );
-    if (confirmed == true) {
-      final failure =
-          await categoryViewModel.deleteCategory(widget.category.id ?? '');
-      if (failure == null && mounted) context.pop();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final category = widget.category;
@@ -278,7 +209,7 @@ class _PinsScreenState extends State<PinsScreen> {
                                       .push(AppRoutes.pinDetailPath(post.id)),
                                   onEdit: () => context
                                       .push(AppRoutes.editPinPath(post.id)),
-                                  onDelete: () => showDeleteDialog(post.id),
+                                  onDelete: () => _deletePin(post.id),
                                   onLinkTap: () async {
                                     final link =
                                         await AppUtils.showAffiliatedLinkDialog(
@@ -315,7 +246,40 @@ class _PinsScreenState extends State<PinsScreen> {
     );
   }
 
-  Future<void> showDeleteDialog(String postId) async {
+  void _openFilters() {
+    final colors = context.appColors;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: colors.surface,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) => FilterBottomSheet(
+        initialStatus: pinsViewModel.statusFilter,
+        initialImageGenerated: pinsViewModel.imageGeneratedFilter,
+        initialDateFrom: pinsViewModel.dateFrom,
+        initialDateTo: pinsViewModel.dateTo,
+        onApply: (status, imageGenerated, from, to) {
+          pinsViewModel.updateFilters(
+            status: status,
+            imageGenerated: imageGenerated,
+            from: from,
+            to: to,
+            clearFrom: from == null,
+            clearTo: to == null,
+          );
+          pinsViewModel.getPosts(categoryId: widget.category.id ?? '');
+        },
+        onClear: () {
+          pinsViewModel.clearFilters();
+          pinsViewModel.getPosts(categoryId: widget.category.id ?? '');
+        },
+      ),
+    );
+  }
+
+  Future<void> _deletePin(String postId) async {
     final isConfirmed = await AppUtils.showDeleteDialog(
       context,
       title: 'Delete Pin',

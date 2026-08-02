@@ -1,6 +1,11 @@
+import 'dart:developer';
+
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:prod_pin/src/common/index.dart' show ProdPinTextField;
 import 'package:prod_pin/src/core/index.dart' show ResponsiveContext;
+import 'package:url_launcher/url_launcher.dart' as launcher;
 
 class AppUtils {
   static Future<bool> showDeleteDialog(
@@ -78,6 +83,54 @@ class AppUtils {
           ],
         );
       },
+    );
+  }
+
+  static void copyToClipboard(
+      BuildContext context, String text, String label) {
+    Clipboard.setData(ClipboardData(text: text));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('$label copied!'),
+        behavior: SnackBarBehavior.floating,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  static Future<void> openUrl(BuildContext context, String url) async {
+    if (kDebugMode) {
+      copyToClipboard(context, url, 'URL');
+      log(url, name: 'openUrl');
+    }
+
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    if (!await launcher.launchUrl(uri,
+        mode: launcher.LaunchMode.externalApplication)) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Could not open link')),
+        );
+      }
+    }
+  }
+
+  static Widget wrapDesktopCard(BuildContext context, Widget child) {
+    if (!context.isDesktop) return child;
+    return Card(
+      elevation: 0,
+      clipBehavior: Clip.antiAlias,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(20),
+        side: BorderSide(
+          color: context.appColors.surfaceElevated.withValues(alpha: .2),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(24),
+        child: child,
+      ),
     );
   }
 }

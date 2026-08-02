@@ -30,20 +30,6 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
     super.dispose();
   }
 
-  void _submit() {
-    if (!_formKey.currentState!.validate()) return;
-
-    addCategoryViewModel.create(
-      name: _nameController.text.trim(),
-      coverImage: _coverImageController.text.trim().isEmpty
-          ? null
-          : _coverImageController.text.trim(),
-      maxPins: int.tryParse(_maxPinsController.text.trim()),
-    );
-
-    if (mounted) context.pop(true);
-  }
-
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider.value(
@@ -60,7 +46,8 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
               constraints: const BoxConstraints(maxWidth: 700),
               child: Padding(
                 padding: const EdgeInsets.all(24),
-                child: _buildCategoryForm(
+                child: AppUtils.wrapDesktopCard(
+                  context,
                   Form(
                     key: _formKey,
                     child: Column(
@@ -95,25 +82,17 @@ class _AddCategoryScreenState extends State<AddCategoryScreen> {
     );
   }
 
-  Widget _buildCategoryForm(Widget child) {
-    Widget? form;
-    if (context.isDesktop) {
-      form = Card(
-        elevation: 0,
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(
-            color: context.appColors.surfaceElevated.withValues(alpha: .2),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: child,
-        ),
-      );
-    }
+  void _submit() {
+    if (!_formKey.currentState!.validate()) return;
 
-    return form ?? child;
+    addCategoryViewModel.create(
+      name: _nameController.text.trim(),
+      coverImage: _coverImageController.text.trim().isEmpty
+          ? null
+          : _coverImageController.text.trim(),
+      maxPins: int.tryParse(_maxPinsController.text.trim()),
+    );
+
+    if (mounted) context.pop(true);
   }
 }

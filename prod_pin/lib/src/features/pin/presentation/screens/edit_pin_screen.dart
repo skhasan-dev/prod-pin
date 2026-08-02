@@ -4,7 +4,7 @@ import 'package:prod_pin/src/common/index.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../core/extensions/context_extensions.dart';
-import '../../../../core/index.dart' show getIt;
+import '../../../../core/index.dart' show getIt, AppUtils;
 import '../view_model/edit_pin_view_model.dart';
 
 class EditPinScreen extends StatefulWidget {
@@ -34,21 +34,6 @@ class _EditPinScreenState extends State<EditPinScreen> {
     editPinViewModel.getPost(widget.id).then((_) => _initControllers());
   }
 
-  void _initControllers() {
-    final post = editPinViewModel.post;
-    if (post == null || _initialized) return;
-    _amazonUrlController = TextEditingController(text: post.amazonUrl);
-    _rawTitleController =
-        TextEditingController(text: post.pinterestTitle ?? '');
-    _rawDescriptionController =
-        TextEditingController(text: post.pinterestDescription ?? '');
-    _affiliatedLinkController =
-        TextEditingController(text: post.affiliatedLink ?? '');
-    _imageUrls = [...post.imageUrls];
-    _initialized = true;
-    setState(() {});
-  }
-
   @override
   void dispose() {
     if (_initialized) {
@@ -58,25 +43,6 @@ class _EditPinScreenState extends State<EditPinScreen> {
       _affiliatedLinkController.dispose();
     }
     super.dispose();
-  }
-
-  Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
-
-    final body = <String, dynamic>{
-      'amazon_url': _amazonUrlController.text.trim(),
-      if (_affiliatedLinkController.text.trim().isNotEmpty)
-        'affiliated_link': _affiliatedLinkController.text.trim(),
-      'image_urls': _imageUrls,
-      if (_regenerate) ...{
-        'regenerate': true,
-        'raw_title': _rawTitleController.text.trim(),
-        'raw_description': _rawDescriptionController.text.trim(),
-      },
-    };
-
-    final failure = await editPinViewModel.updatePost(widget.id, body);
-    if (failure == null && mounted) context.pop(true);
   }
 
   @override
@@ -101,7 +67,8 @@ class _EditPinScreenState extends State<EditPinScreen> {
             body: SafeArea(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 4, 20, 20),
-                child: _buildCategoryForm(
+                child: AppUtils.wrapDesktopCard(
+                  context,
                   Form(
                     key: _formKey,
                     child: Column(
@@ -200,25 +167,37 @@ class _EditPinScreenState extends State<EditPinScreen> {
     );
   }
 
-  Widget _buildCategoryForm(Widget child) {
-    Widget? form;
-    if (context.isDesktop) {
-      form = Card(
-        elevation: 0,
-        clipBehavior: Clip.antiAlias,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-          side: BorderSide(
-            color: context.appColors.surfaceElevated.withValues(alpha: .2),
-          ),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: child,
-        ),
-      );
-    }
+  void _initControllers() {
+    final post = editPinViewModel.post;
+    if (post == null || _initialized) return;
+    _amazonUrlController = TextEditingController(text: post.amazonUrl);
+    _rawTitleController =
+        TextEditingController(text: post.pinterestTitle ?? '');
+    _rawDescriptionController =
+        TextEditingController(text: post.pinterestDescription ?? '');
+    _affiliatedLinkController =
+        TextEditingController(text: post.affiliatedLink ?? '');
+    _imageUrls = [...post.imageUrls];
+    _initialized = true;
+    setState(() {});
+  }
 
-    return form ?? child;
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+
+    final body = <String, dynamic>{
+      'amazon_url': _amazonUrlController.text.trim(),
+      if (_affiliatedLinkController.text.trim().isNotEmpty)
+        'affiliated_link': _affiliatedLinkController.text.trim(),
+      'image_urls': _imageUrls,
+      if (_regenerate) ...{
+        'regenerate': true,
+        'raw_title': _rawTitleController.text.trim(),
+        'raw_description': _rawDescriptionController.text.trim(),
+      },
+    };
+
+    final failure = await editPinViewModel.updatePost(widget.id, body);
+    if (failure == null && mounted) context.pop(true);
   }
 }
