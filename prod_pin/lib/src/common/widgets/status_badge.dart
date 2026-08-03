@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:prod_pin/src/core/utils/enums.dart';
-
-import '../../core/extensions/context_extensions.dart';
+import 'package:prod_pin/src/core/index.dart';
 
 class StatusBadge extends StatelessWidget {
   final PinStatus status;
+  final ValueChanged<PinStatus> onApply;
+  final bool disable;
 
-  const StatusBadge({super.key, required this.status});
+  const StatusBadge({
+    super.key,
+    required this.status,
+    required this.onApply,
+    this.disable = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -16,19 +21,33 @@ class StatusBadge extends StatelessWidget {
       PinStatus.published => colors.published,
       PinStatus.draft => colors.draft,
     };
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
-      ),
-      child: Text(
-        status.label,
-        style: TextStyle(
-          color: color,
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: disable
+          ? null
+          : () {
+              AppUtils.showItemSheet<PinStatus>(
+                context,
+                selectedValue: status,
+                label: 'Publish Status',
+                values: PinStatus.values,
+                onApplyPressed: onApply,
+                labelBuilder: (status) => status.label,
+              );
+            },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withValues(alpha: 0.4)),
+        ),
+        child: Text(
+          status.label,
+          style: TextStyle(
+            color: color,
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );
@@ -37,8 +56,15 @@ class StatusBadge extends StatelessWidget {
 
 class ImageGenBadge extends StatelessWidget {
   final PinImageGenerationStatus value;
+  final ValueChanged<PinImageGenerationStatus> onApply;
+  final bool disable;
 
-  const ImageGenBadge({super.key, required this.value});
+  const ImageGenBadge({
+    super.key,
+    required this.value,
+    required this.onApply,
+    this.disable = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -48,19 +74,33 @@ class ImageGenBadge extends StatelessWidget {
       PinImageGenerationStatus.generated => colors.generated,
       PinImageGenerationStatus.yetToGenerate => colors.yetToGenerate,
     };
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withValues(alpha: 0.4)),
-      ),
-      child: Text(
-        value.label,
-        style: TextStyle(
-          color: color,
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onTap: disable
+          ? null
+          : () {
+              AppUtils.showItemSheet<PinImageGenerationStatus>(
+                context,
+                selectedValue: value,
+                label: 'Image Generation Status',
+                values: PinImageGenerationStatus.values,
+                onApplyPressed: onApply,
+                labelBuilder: (status) => status.label,
+              );
+            },
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+        decoration: BoxDecoration(
+          color: color.withValues(alpha: 0.15),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: color.withValues(alpha: 0.4)),
+        ),
+        child: Text(
+          value.label,
+          style: TextStyle(
+            color: color,
+            fontSize: 11,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
     );

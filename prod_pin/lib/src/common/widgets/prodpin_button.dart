@@ -45,7 +45,7 @@ class ProdPinButton extends StatelessWidget {
                 label,
                 style: textStyles.titleMedium.copyWith(
                   color: isSecondary
-                      ? (disabled ? colors.textMuted : colors.accent)
+                      ? (disabled ? colors.textMuted : colors.textSecondary)
                       : Colors.white,
                 ),
               ),
@@ -60,7 +60,7 @@ class ProdPinButton extends StatelessWidget {
               onPressed: disabled ? null : onPressed,
               style: OutlinedButton.styleFrom(
                 side: BorderSide(
-                  color: disabled ? colors.textMuted : colors.accent,
+                  color: disabled ? colors.textMuted : colors.textSecondary,
                 ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10),

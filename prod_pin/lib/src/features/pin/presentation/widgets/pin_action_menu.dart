@@ -26,106 +26,93 @@ class PinActionMenuWeb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.appColors;
+    bool isPublished = post.status == PinStatus.published;
 
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        // InkWell(
-        //   onTap: () => onCycleImageStatus(post.imageGenerated.next),
-        //   borderRadius: BorderRadius.circular(20),
-        //   child: ImageGenBadge(value: post.imageGenerated),
-        // ),
-        // const SizedBox(width: 8),
-        // DropdownButtonHideUnderline(
-        //   child: DropdownButton<PinStatus>(
-        //     value: post.status,
-        //     dropdownColor: colors.surfaceElevated,
-        //     style: TextStyle(color: colors.textPrimary, fontSize: 12),
-        //     items: PinStatus.values
-        //         .map(
-        //           (s) => DropdownMenuItem(
-        //             value: s,
-        //             child: StatusBadge(status: s),
-        //           ),
-        //         )
-        //         .toList(),
-        //     onChanged: (v) {
-        //       if (v != null) onStatusChanged(v);
-        //     },
-        //   ),
-        // ),
-        ImageGenBadge(value: post.imageGenerated),
+        ImageGenBadge(
+          value: post.imageGenerated,
+          onApply: onCycleImageStatus,
+          disable: isPublished,
+        ),
         const SizedBox(width: 12),
-        StatusBadge(status: post.status),
+        StatusBadge(
+          status: post.status,
+          onApply: onStatusChanged,
+          disable: isPublished,
+        ),
         const SizedBox(width: 12),
-        Tooltip(
-          message: 'Affiliate Link',
-          child: GestureDetector(
-            onTap: onLinkTap,
-            child: Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                border: Border.all(
+        if (!isPublished) ...[
+          Tooltip(
+            message: 'Affiliate Link',
+            child: GestureDetector(
+              onTap: onLinkTap,
+              child: Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: colors.published,
+                    width: 0.5,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                  color: colors.published.withValues(alpha: 0.2),
+                ),
+                child: Icon(
+                  Icons.link,
+                  size: 22,
                   color: colors.published,
-                  width: 0.5,
                 ),
-                borderRadius: BorderRadius.circular(8),
-                color: colors.published.withValues(alpha: 0.2),
-              ),
-              child: Icon(
-                Icons.link,
-                size: 22,
-                color: colors.published,
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Tooltip(
-          message: 'Edit',
-          child: GestureDetector(
-            onTap: onEdit,
-            child: Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                border: Border.all(
+          const SizedBox(width: 12),
+          Tooltip(
+            message: 'Edit',
+            child: GestureDetector(
+              onTap: onEdit,
+              child: Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: colors.ready,
+                    width: 0.5,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                  color: colors.ready.withValues(alpha: 0.2),
+                ),
+                child: Icon(
+                  Icons.edit_outlined,
+                  size: 22,
                   color: colors.ready,
-                  width: 0.5,
                 ),
-                borderRadius: BorderRadius.circular(8),
-                color: colors.ready.withValues(alpha: 0.2),
-              ),
-              child: Icon(
-                Icons.edit_outlined,
-                size: 22,
-                color: colors.ready,
               ),
             ),
           ),
-        ),
-        const SizedBox(width: 12),
-        Tooltip(
-          message: 'Delete',
-          child: GestureDetector(
-            onTap: onDelete,
-            child: Container(
-              padding: EdgeInsets.all(8),
-              decoration: BoxDecoration(
-                border: Border.all(
+          const SizedBox(width: 12),
+          Tooltip(
+            message: 'Delete',
+            child: GestureDetector(
+              onTap: onDelete,
+              child: Container(
+                padding: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: colors.accentMuted,
+                    width: 0.5,
+                  ),
+                  borderRadius: BorderRadius.circular(8),
+                  color: colors.error,
+                ),
+                child: Icon(
+                  Icons.delete_outline,
+                  size: 24,
                   color: colors.accentMuted,
-                  width: 0.5,
                 ),
-                borderRadius: BorderRadius.circular(8),
-                color: colors.error,
-              ),
-              child: Icon(
-                Icons.delete_outline,
-                size: 24,
-                color: colors.accentMuted,
               ),
             ),
           ),
-        ),
+        ],
       ],
     );
   }

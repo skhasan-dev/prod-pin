@@ -217,21 +217,31 @@ class _PinsScreenState extends State<PinsScreen> {
                                       currentLink: post.affiliatedLink,
                                     );
                                     if (link != null) {
-                                      pinsViewModel.updatePost(
-                                          post.id, {'affiliated_link': link});
+                                      final failure =
+                                          await pinsViewModel.updatePost(
+                                        post.id,
+                                        {'affiliated_link': link},
+                                      );
+                                      failure?.showError(context);
                                     }
                                   },
-                                  onCycleImageStatus: (nextStatus) =>
-                                      pinsViewModel.updatePost(post.id, {
-                                    'image_generated': nextStatus.jsonValue,
-                                  }),
-                                  onStatusChanged: (status) =>
-                                      pinsViewModel.updatePost(
-                                    post.id,
-                                    {
-                                      'status': status.jsonValue,
-                                    },
-                                  ),
+                                  onCycleImageStatus: (nextStatus) async {
+                                    final failure =
+                                        await pinsViewModel.updatePost(
+                                      post.id,
+                                      {'image_generated': nextStatus.jsonValue},
+                                    );
+
+                                    failure?.showError(context);
+                                  },
+                                  onStatusChanged: (status) async {
+                                    final failure =
+                                        await pinsViewModel.updatePost(
+                                      post.id,
+                                      {'status': status.jsonValue},
+                                    );
+                                    failure?.showError(context);
+                                  },
                                 );
                               },
                             ),

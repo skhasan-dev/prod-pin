@@ -23,8 +23,14 @@ class PinMetadataRow extends StatelessWidget {
           spacing: 8,
           runSpacing: 8,
           children: [
-            StatusBadge(status: post.status),
-            ImageGenBadge(value: post.imageGenerated),
+            StatusBadge(
+              status: post.status,
+              onApply: (status) {},
+            ),
+            ImageGenBadge(
+              value: post.imageGenerated,
+              onApply: (status) {},
+            ),
             _PinCategoryBadge(name: post.category.name ?? ''),
           ],
         ),
