@@ -6,8 +6,15 @@ import 'package:prod_pin/src/features/pin/index.dart';
 
 class PinMetadataRow extends StatelessWidget {
   final Post post;
+  final ValueChanged<PinImageGenerationStatus> onImageStatus;
+  final ValueChanged<PinStatus> onPublishStatus;
 
-  const PinMetadataRow({super.key, required this.post});
+  const PinMetadataRow({
+    super.key,
+    required this.post,
+    required this.onImageStatus,
+    required this.onPublishStatus,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +32,13 @@ class PinMetadataRow extends StatelessWidget {
           children: [
             StatusBadge(
               status: post.status,
-              onApply: (status) {},
+              onApply: onPublishStatus,
+              disable: post.status == PinStatus.published,
             ),
             ImageGenBadge(
               value: post.imageGenerated,
-              onApply: (status) {},
+              onApply: onImageStatus,
+              disable: post.status == PinStatus.published,
             ),
             _PinCategoryBadge(name: post.category.name ?? ''),
           ],

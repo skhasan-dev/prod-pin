@@ -79,7 +79,9 @@ class _ImageUrlListFieldState extends State<ImageUrlListField> {
                 ),
                 child: Text(
                   'Add',
-                  style: context.appTextStyles.titleMedium,
+                  style: context.appTextStyles.titleMedium.copyWith(
+                    color: Colors.white,
+                  ),
                 ),
               ),
             ),
