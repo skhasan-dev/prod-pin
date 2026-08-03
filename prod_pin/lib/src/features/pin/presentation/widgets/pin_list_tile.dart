@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:prod_pin/src/core/utils/enums.dart';
+import 'package:prod_pin/src/common/index.dart';
+import 'package:prod_pin/src/core/index.dart';
 
-import '../../../../common/widgets/tag_chip.dart';
-import '../../../../core/extensions/context_extensions.dart';
 import '../../data/entities/post.dart';
 import 'pin_action_menu.dart';
 
@@ -71,19 +70,38 @@ class PinListTile extends StatelessWidget {
                     style: textStyles.titleMedium.copyWith(fontSize: 14),
                   ),
                   const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 6,
-                    runSpacing: 4,
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: [
-                      ...visibleTags.map((t) => TagChip(label: t)),
-                      if (remaining > 0)
-                        Text(
-                          '+$remaining more',
-                          style: textStyles.bodySmall,
+                  if (context.isMobile)
+                    Row(
+                      spacing: 12,
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        if (post.status != PinStatus.published)
+                          ImageGenBadge(
+                            value: post.imageGenerated,
+                            onApply: onCycleImageStatus,
+                            disable: true,
+                          ),
+                        StatusBadge(
+                          status: post.status,
+                          onApply: onStatusChanged,
+                          disable: true,
                         ),
-                    ],
-                  ),
+                      ],
+                    )
+                  else
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        ...visibleTags.map((t) => TagChip(label: t)),
+                        if (remaining > 0)
+                          Text(
+                            '+$remaining more',
+                            style: textStyles.bodySmall,
+                          ),
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -94,8 +112,8 @@ class PinListTile extends StatelessWidget {
                 onEdit: onEdit,
                 onDelete: onDelete,
                 onLinkTap: onLinkTap,
-                onCycleImageStatus: onCycleImageStatus,
-                onStatusChanged: onStatusChanged,
+                onImageStatus: onCycleImageStatus,
+                onPublishStatus: onStatusChanged,
               )
             else
               PinActionMenuWeb(

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:prod_pin/src/core/utils/enums.dart';
+import 'package:prod_pin/src/core/index.dart';
 
 import '../../../../common/widgets/status_badge.dart';
-import '../../../../core/extensions/context_extensions.dart';
 import '../../data/entities/post.dart';
 
 class PinActionMenuWeb extends StatelessWidget {
@@ -123,8 +122,8 @@ class PinActionMenuMobile extends StatelessWidget {
   final VoidCallback onEdit;
   final VoidCallback onDelete;
   final VoidCallback onLinkTap;
-  final ValueChanged<PinImageGenerationStatus> onCycleImageStatus;
-  final ValueChanged<PinStatus> onStatusChanged;
+  final ValueChanged<PinImageGenerationStatus> onImageStatus;
+  final ValueChanged<PinStatus> onPublishStatus;
 
   const PinActionMenuMobile({
     super.key,
@@ -132,54 +131,61 @@ class PinActionMenuMobile extends StatelessWidget {
     required this.onEdit,
     required this.onDelete,
     required this.onLinkTap,
-    required this.onCycleImageStatus,
-    required this.onStatusChanged,
+    required this.onImageStatus,
+    required this.onPublishStatus,
   });
 
   @override
   Widget build(BuildContext context) {
+    if (post.status == PinStatus.published) return SizedBox.shrink();
+
     final colors = context.appColors;
 
     return PopupMenuButton<String>(
       icon: Icon(Icons.more_vert, color: colors.textSecondary),
       color: colors.surfaceElevated,
-      onSelected: (value) {
-        switch (value) {
-          case 'link':
-            onLinkTap();
-          case 'image_status':
-            onCycleImageStatus(post.imageGenerated.next);
-          case 'edit':
-            onEdit();
-          case 'delete':
-            onDelete();
-          case 'status_draft':
-            onStatusChanged(PinStatus.draft);
-          case 'status_ready':
-            onStatusChanged(PinStatus.ready);
-          case 'status_published':
-            onStatusChanged(PinStatus.published);
-        }
-      },
       itemBuilder: (context) => [
-        const PopupMenuItem(value: 'link', child: Text('Affiliated Link')),
+        PopupMenuItem(
+          value: 'link',
+          onTap: onLinkTap,
+          child: Text('Affiliated Link'),
+        ),
         PopupMenuItem(
           value: 'image_status',
-          child: Text(
-            'Cycle Image Status (${post.imageGenerated.label})',
-          ),
+          onTap: () {
+            AppUtils.showItemSheet<PinImageGenerationStatus>(
+              context,
+              selectedValue: post.imageGenerated,
+              label: 'Image Generation Status',
+              values: PinImageGenerationStatus.values,
+              onApplyPressed: onImageStatus,
+              labelBuilder: (status) => status.label,
+            );
+          },
+          child: Text('Image Generation Status'),
         ),
-        const PopupMenuDivider(),
-        const PopupMenuItem(value: 'status_draft', child: Text('Set: Draft')),
-        const PopupMenuItem(value: 'status_ready', child: Text('Set: Ready')),
-        const PopupMenuItem(
-          value: 'status_published',
-          child: Text('Set: Published'),
+        PopupMenuItem(
+          value: 'publish_status',
+          onTap: () {
+            AppUtils.showItemSheet<PinStatus>(
+              context,
+              selectedValue: post.status,
+              label: 'Image Generation Status',
+              values: PinStatus.values,
+              onApplyPressed: onPublishStatus,
+              labelBuilder: (status) => status.label,
+            );
+          },
+          child: const Text('Publish Status'),
         ),
-        const PopupMenuDivider(),
-        const PopupMenuItem(value: 'edit', child: Text('Edit')),
+        PopupMenuItem(
+          value: 'edit',
+          onTap: onEdit,
+          child: Text('Edit'),
+        ),
         PopupMenuItem(
           value: 'delete',
+          onTap: onDelete,
           child: Text(
             'Delete',
             style: TextStyle(color: context.appColors.error),
